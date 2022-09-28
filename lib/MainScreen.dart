@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     requestPermission();
-    getToken();
+    // getToken();
     initInfo();
   }
 
@@ -92,7 +92,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void saveToken(String token) async {
-    await FirebaseFirestore.instance.collection("UserTokens").doc("User1").set({
+    String name = username.text.trim();
+    await FirebaseFirestore.instance.collection("UserTokens").doc(name).set({
       'token': token,
     });
   }
@@ -175,6 +176,8 @@ class _MainScreenState extends State<MainScreen> {
                   String bodyText = body.text;
                   // throw Exception();
                   if (name != "") {
+                    getToken();
+
                     DocumentSnapshot snap = await FirebaseFirestore.instance
                         .collection("UserTokens")
                         .doc(name)
@@ -182,8 +185,7 @@ class _MainScreenState extends State<MainScreen> {
                     String token = snap['token'];
                     print(token);
                     //throw Exception();
-
-                    sendPushMessage(token, titleText, bodyText);
+                    sendPushMessage(token, bodyText, titleText);
                     //FirebaseCrashlytics.instance.crash();
                   }
                 },
