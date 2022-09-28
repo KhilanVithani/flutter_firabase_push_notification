@@ -1,5 +1,7 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -109,6 +111,38 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  void sendPushMessage(String token, String body, String title) async {
+    try {
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAAv3HOrQg:APA91bFDqU282AI-Q9n-ySkhMjVv4CkTg1m55yNJwLLsMfu_AehTjSLEklIk99_1AZBJFsBt2pMjTqoHqOj9secnvu9qG4x3DVyQ4JgzqsYIB9LRKcwIarxzcsEPvlKLOkQXVJc96Pk5',
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': ' FLUTTER_NOTIFICATION_CLICK ',
+              'status': 'done',
+              'body': body,
+              'title': title,
+            },
+            "notification": <String, dynamic>{
+              "title": title,
+              "body": body,
+              "android_channel_id": "dbfood"
+            },
+            "to": token,
+          },
+        ),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,10 +162,20 @@ class _MainScreenState extends State<MainScreen> {
                 controller: body,
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   String name = username.text.trim();
                   String titleText = title.text;
                   String bodyText = body.text;
+
+                  if (name != "") {
+                    DocumentSnapshot snap = await FirebaseFirestore.instance
+                        .collection("UserTokens")
+                        .doc(name)
+                        .get();
+                    String token = snap['token'];
+                    print(token);
+                    sendPushMessage(token, titleText, bodyText);
+                  }
                 },
                 child: Container(
                   margin: EdgeInsets.all(20),
