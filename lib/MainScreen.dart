@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_firebase_push_notification/new_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,11 @@ class _MainScreenState extends State<MainScreen> {
         onSelectNotification: (String? payload) async {
       try {
         if (payload != null && payload.isNotEmpty) {
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) {
+              return NewScreen(info: payload.toString());
+            },
+          ));
         } else {}
       } catch (e) {}
       return;
