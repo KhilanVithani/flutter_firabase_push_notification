@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_firebase_push_notification/new_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -172,7 +173,7 @@ class _MainScreenState extends State<MainScreen> {
                   String name = username.text.trim();
                   String titleText = title.text;
                   String bodyText = body.text;
-
+                  // throw Exception();
                   if (name != "") {
                     DocumentSnapshot snap = await FirebaseFirestore.instance
                         .collection("UserTokens")
@@ -180,7 +181,10 @@ class _MainScreenState extends State<MainScreen> {
                         .get();
                     String token = snap['token'];
                     print(token);
+                    //throw Exception();
+
                     sendPushMessage(token, titleText, bodyText);
+                    //FirebaseCrashlytics.instance.crash();
                   }
                 },
                 child: Container(
